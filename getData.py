@@ -2,40 +2,115 @@ import requests
 import re
 import pandas as pd
 
-url = 'https://th.wikipedia.org/wiki/รายชื่อวัดในจังหวัดนครศรีธรรมราช'
-response = requests.get(url)
-# print(response.text)
+def select_province(province):
+    # นครศรีธรรมราช
+    if (province == 1):
+        return nonTablePattern('https://th.wikipedia.org/wiki/รายชื่อวัดในจังหวัดนครศรีธรรมราช')
+    # นครสวรรค์
+    elif (province == 2):
+        return nonTablePattern('https://th.wikipedia.org/wiki/รายชื่อวัดในจังหวัดนครสวรรค์')
+    # นนทบุรี
+    elif (province == 3):
+        return tablePattern('https://th.wikipedia.org/wiki/รายชื่อวัดในจังหวัดนนทบุรี')
+    # นราธิวาส
+    elif (province == 4):
+        return nonTablePattern('https://th.wikipedia.org/wiki/รายชื่อวัดในจังหวัดนราธิวาส')
+    # อุทัยธานี
+    elif (province == 5):
+        return nonTablePattern('https://th.wikipedia.org/wiki/รายชื่อวัดในจังหวัดอุทัยธานี')
+    # เชี่ยไรไม่รู้ที่ไม่ได้อยู่ข้างบน
+    else:
+        print('ไอ้สัส!! กูไม่ได้ทำจังหวัดนี้')
+
+# นครศรีธรรมราช , นครสวรรค์ , นราธิวาส , อุทัยธานี
+def nonTablePattern(url):
+    response = requests.get(url)
+
+    # กำหนดช่วงที่จะหาให้อยู่ตั้งแต่ <main ..................... id="ดูเพิ่ม">ดูเพิ่ม</span>
+    pattern = re.compile('<main[\u0000-\uFFFF]*id="ดูเพิ่ม">ดูเพิ่ม</span>')
+    result = re.findall(pattern, response.text)
+
+    # กำหนดให้หาแค่ในเฉพาะ <li>.............</li>
+    pattern = re.compile('<li>.*</li>')
+    result = re.findall(pattern, '\n'.join(result))
+
+    # กำหนดให้หาแค่ชื่อวัด
+    pattern = re.compile('>วัด[\u0E01-\u0E5B]*')
+    wat = re.findall(pattern, '\n'.join(result))
+
+    # กำหนดให้หาแค่ชื่อสำนักสงฆ์
+    pattern = re.compile('>สำนักสงฆ์[\u0E01-\u0E5B]*')
+    samNak = re.findall(pattern, '\n'.join(result))
+
+    # กำหนดให้หาแค่ที่พักสงฆ์
+    pattern = re.compile('>ที่พักสงฆ์[\u0E01-\u0E5B]*')
+    teePak = re.findall(pattern, '\n'.join(result))
+
+    # print เช็คเฉยๆ
+    print_data(wat, samNak, teePak)
+
+    # เช็คจำนวน
+    count_data(wat, samNak, teePak)
+
+# นครสวรรค์
+def tablePattern(url):
+    response = requests.get(url)
+
+    # กำหนดช่วงที่จะหาให้อยู่ตั้งแต่ <div id= ..................... title="ประเทศไทย">ประเทศไทย</a>แบ่งตามจังหวัด</div>
+    pattern = re.compile('<div id=[\u0000-\uFFFF]*title="ประเทศไทย">ประเทศไทย</a>แบ่งตามจังหวัด</div>')
+    result = re.findall(pattern, response.text)
+
+    # กำหนดให้หาแค่ในเฉพาะ <td>.............</td>
+    pattern = re.compile('<td>.*</td>')
+    result = re.findall(pattern, '\n'.join(result))
+
+    # กำหนดให้หาแค่ชื่อวัด
+    pattern = re.compile('>วัด[\u0E01-\u0E5B]*')
+    wat = re.findall(pattern, '\n'.join(result))
+
+    # กำหนดให้หาแค่ชื่อสำนักสงฆ์
+    pattern = re.compile('>สำนักสงฆ์[\u0E01-\u0E5B]*')
+    samNak = re.findall(pattern, '\n'.join(result))
+
+    # กำหนดให้หาแค่ที่พักสงฆ์
+    pattern = re.compile('>ที่พักสงฆ์[\u0E01-\u0E5B]*')
+    teePak = re.findall(pattern, '\n'.join(result))
+
+    # print เช็คเฉยๆ
+    print_data(wat, samNak, teePak)
+
+    # เช็คจำนวน
+    count_data(wat, samNak, teePak)
+
+def print_data(wat, samNak, teePak):
+    for i in wat:
+        print(i)
+
+    for i in samNak:
+        print(i)
+    
+    for i in teePak:
+        print(i)
+
+def count_data(wat, samNak, teePak):
+    print('วัด = ' + str(len(wat)))
+    print('สำนักสงฆ์ = ' + str(len(samNak)))
+    print('ที่พักสงฆ์ = ' + str(len(teePak)))
+
+if __name__ == '__main__':
+    print("===== Select one of them =====")
+    print("1. จังหวัดนครศรีธรรมราช")
+    print("2. จังหวัดนครสวรรค์")
+    print("3. จังหวัดนนทบุรี")
+    print("4. จังหวัดนราธิวาส")
+    print("5. จังหวัดอุทัยธานี")
+    province = int(input("Select(number) : "))
+    select_province(province)
+    
+
 # table = pd.read_html(response.text)
 # for i in table:
 #     print(f'{i}\n\n')
-    
-    
-pattern = re.compile('<main[\u0000-\uFFFF]*id="ดูเพิ่ม">ดูเพิ่ม</span>')
-result = re.findall(pattern, response.text)
-
-pattern = re.compile('<li>.*</li>')
-result = re.findall(pattern, '\n'.join(result))
-
-# pattern = re.compile('สำนักสงฆ์[\u0E01-\u0E5B]*')
-# samNak = re.findall(pattern, '\n'.join(result))
-
-pattern = re.compile('>วัด[\u0E01-\u0E5B]*')
-wat = re.findall(pattern, '\n'.join(result))
-
-nn = 0
-# print(len(samNak))
-# for i in samNak:
-#     print(i)
-#     if nn==50:
-#         break
-#     nn+=1
-nn=0
-print(len(wat))
-for i in wat:
-    print(i)
-    # if nn==200:
-    #     break
-    # nn+=1
 
 # m = [] #เช็คจำนวนข้อมูล
 # mm ='' #ไว้สร้าง String
