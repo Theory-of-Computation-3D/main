@@ -36,7 +36,8 @@ def nonTablePattern(url):
 
     # กำหนดให้หาแค่ชื่อวัด
     pattern = re.compile('>วัด[\u0E01-\u0E5B]*')
-    wat = re.findall(pattern, '\n'.join(result))
+    wat = re.sub(">", "", str(result))
+    wat = re.findall(pattern, ''.join(result))
 
     # กำหนดให้หาแค่ชื่อสำนักสงฆ์
     pattern = re.compile('>สำนักสงฆ์[\u0E01-\u0E5B]*')
@@ -51,6 +52,11 @@ def nonTablePattern(url):
 
     # เช็คจำนวน
     count_data(wat, samNak, teePak)
+
+    # ลบ > ออกไป
+    data = groupData(wat, samNak, teePak)
+
+    # print((data))
 
 # นครสวรรค์
 def tablePattern(url):
@@ -82,6 +88,11 @@ def tablePattern(url):
     # เช็คจำนวน
     count_data(wat, samNak, teePak)
 
+    # ลบ > ออกไป
+    data = groupData(wat, samNak, teePak)
+
+    # print((data))
+
 def print_data(wat, samNak, teePak):
     for i in wat:
         print(i)
@@ -96,6 +107,16 @@ def count_data(wat, samNak, teePak):
     print('วัด = ' + str(len(wat)))
     print('สำนักสงฆ์ = ' + str(len(samNak)))
     print('ที่พักสงฆ์ = ' + str(len(teePak)))
+
+def groupData(wat, samNak, teePak):
+    templeList = []
+    for i in wat:
+        templeList.append(re.sub(">", "", i))
+    for i in samNak:
+        templeList.append(re.sub(">", "", i))
+    for i in teePak:
+        templeList.append(re.sub(">", "", i))
+    return templeList
 
 if __name__ == '__main__':
     print("===== Select one of them =====")
