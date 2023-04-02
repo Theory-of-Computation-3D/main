@@ -39,24 +39,15 @@ def nonTablePattern(url):
     wat = re.sub(">", "", str(result))
     wat = re.findall(pattern, ''.join(result))
 
-    # กำหนดให้หาแค่ชื่อสำนักสงฆ์
-    pattern = re.compile('>สำนักสงฆ์[\u0E01-\u0E5B]*')
-    samNak = re.findall(pattern, '\n'.join(result))
+    # ลบ > ออกไป
+    # เอา array data ไปใช้ต่อได้เลย 
+    data = groupData(wat)
 
-    # กำหนดให้หาแค่ที่พักสงฆ์
-    pattern = re.compile('>ที่พักสงฆ์[\u0E01-\u0E5B]*')
-    teePak = re.findall(pattern, '\n'.join(result))
-
-    # print เช็คเฉยๆ
-    print_data(wat, samNak, teePak)
+    # print เช็ค data
+    print(data)
 
     # เช็คจำนวน
-    count_data(wat, samNak, teePak)
-
-    # ลบ > ออกไป
-    data = groupData(wat, samNak, teePak)
-
-    # print((data))
+    print('วัด = ' + str(len(data)))
 
 # นครสวรรค์
 def tablePattern(url):
@@ -74,47 +65,19 @@ def tablePattern(url):
     pattern = re.compile('>วัด[\u0E01-\u0E5B]*')
     wat = re.findall(pattern, '\n'.join(result))
 
-    # กำหนดให้หาแค่ชื่อสำนักสงฆ์
-    pattern = re.compile('>สำนักสงฆ์[\u0E01-\u0E5B]*')
-    samNak = re.findall(pattern, '\n'.join(result))
+    # ลบ > ออกไป
+    # เอา array data ไปใช้ต่อได้เลย 
+    data = groupData(wat)
 
-    # กำหนดให้หาแค่ที่พักสงฆ์
-    pattern = re.compile('>ที่พักสงฆ์[\u0E01-\u0E5B]*')
-    teePak = re.findall(pattern, '\n'.join(result))
-
-    # print เช็คเฉยๆ
-    print_data(wat, samNak, teePak)
+    # print เช็ค data
+    print(data)
 
     # เช็คจำนวน
-    count_data(wat, samNak, teePak)
+    print('วัด = ' + str(len(data)))
 
-    # ลบ > ออกไป
-    data = groupData(wat, samNak, teePak)
-
-    # print((data))
-
-def print_data(wat, samNak, teePak):
-    for i in wat:
-        print(i)
-
-    for i in samNak:
-        print(i)
-    
-    for i in teePak:
-        print(i)
-
-def count_data(wat, samNak, teePak):
-    print('วัด = ' + str(len(wat)))
-    print('สำนักสงฆ์ = ' + str(len(samNak)))
-    print('ที่พักสงฆ์ = ' + str(len(teePak)))
-
-def groupData(wat, samNak, teePak):
+def groupData(wat):
     templeList = []
     for i in wat:
-        templeList.append(re.sub(">", "", i))
-    for i in samNak:
-        templeList.append(re.sub(">", "", i))
-    for i in teePak:
         templeList.append(re.sub(">", "", i))
     return templeList
 
